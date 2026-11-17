@@ -16,9 +16,28 @@ Open **[index.html](index.html)** directly in a desktop or mobile browser to pre
 | [08-aurora-glass-3d.html](08-aurora-glass-3d.html) | Aurora Glass | Original CSS 3D concept |
 | [09-isometric-vault-3d.html](09-isometric-vault-3d.html) | Isometric Vault | Original CSS 3D concept |
 
+## Motion studies (10–33)
+
+Open [10-motion-studies.html](10-motion-studies.html) to browse all 24 new designs offline. Each gallery card links to a specific design. Inside the file, use the selector or arrow buttons to switch designs. Drag the sculpture or use **Rotate** to turn it. **Pause** stops automatic motion.
+
+| Design | Illustration | Design | Illustration |
+|---|---|---|---|
+| [10 · Pleat](10-motion-studies.html#pleat) | Folded ribbon | [22 · Facet Editions](10-motion-studies.html#facet) | Faceted quartz cluster |
+| [11 · Offbeat FM](10-motion-studies.html#offbeat) | Grooved vinyl | [23 · Breakwater](10-motion-studies.html#breakwater) | Rolling wave field |
+| [12 · Strata Maps](10-motion-studies.html#strata) | Survey contours | [24 · Aperture Lab](10-motion-studies.html#aperture) | Mechanical iris |
+| [13 · Phase Array](10-motion-studies.html#phase) | Signal harmonics | [25 · Switchback](10-motion-studies.html#switchback) | Mountain switchbacks |
+| [14 · Soft Serve](10-motion-studies.html#softserve) | Twisted soft-serve cone | [26 · Coil Supply](10-motion-studies.html#coil) | Helical spring |
+| [15 · Redline Transit](10-motion-studies.html#redline) | Transit interchange | [27 · Kiln Journal](10-motion-studies.html#kiln) | Thrown ceramic vessel |
+| [16 · Umbra](10-motion-studies.html#eclipse) | Eclipse and satellites | [28 · Balance Studio](10-motion-studies.html#mobile) | Balanced hanging mobile |
+| [17 · Stack House](10-motion-studies.html#stack) | Cantilever blocks | [29 · Rally Club](10-motion-studies.html#rally) | Seamed tennis ball |
+| [18 · Loom Works](10-motion-studies.html#loom) | Interlaced warp and weft | [30 · Lantern House](10-motion-studies.html#lantern) | Ribbed paper lantern |
+| [19 · Relay Audio](10-motion-studies.html#relay) | Equalizer columns | [31 · Velodrome](10-motion-studies.html#velocity) | Banked cycling track |
+| [20 · Petal Club](10-motion-studies.html#petal) | Layered flower | [32 · Echo Chamber](10-motion-studies.html#echo) | Acoustic diaphragm |
+| [21 · Meridian Air](10-motion-studies.html#meridian) | Great-circle flights | [33 · Solstice Index](10-motion-studies.html#solstice) | Radial sundial |
+
 ## What's included
 
-- **One self-contained HTML file per UI** (embedded CSS, SVG/icons, and JavaScript). Copy any file into another project as a reference.
+- The first nine designs each have their own HTML file. Designs 10–33 share one self-contained HTML file with embedded CSS, Canvas 3D illustrations, and JavaScript.
 - Responsive layouts, animated scene illustrations, accessible field labels, email/password validation, show/hide password control, and motion-reduction support.
 - Interactive front-end-only feedback. Login/Google/GitHub/forgot-password/sign-up are **demo buttons only**. They do not authenticate, create users, transmit passwords or access external services.
 - In design #1, focus the password field to make the pet close its eyes and cover its face.

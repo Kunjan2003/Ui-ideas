@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Twenty-four interactive sign-in concepts with locally rendered 3D artwork.">
+<title>Motion studies · UI Ideas</title>
+<style>
+* { box-sizing: border-box }
+:root {
+  --page:#f1efe7; --ink:#202322; --stage:#163c38; --light:#cbf48a;
+  --rule:color-mix(in srgb,var(--ink) 22%,transparent);
+  --paper:color-mix(in srgb,var(--page) 93%,var(--ink));
+  --display:"Arial",sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:light
+}
+body { margin:0; background:var(--page); color:var(--ink); font:1rem/1.45 Inter,"Segoe UI",sans-serif }
+button,input,select { font:inherit; color:inherit }
+button,select { cursor:pointer }
+button { background:none; border:0 }
+a { color:inherit }
+:focus-visible { outline:3px solid currentColor; outline-offset:4px }
+main { width:min(1400px,100%); margin:auto; padding:0 clamp(14px,4vw,66px) }
+.bar { display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:68px; border-bottom:1px solid var(--rule) }
+.archive { text-decoration:none; font-weight:800; letter-spacing:-.04em; white-space:nowrap }
+.controls { min-width:0; display:flex; align-items:center; gap:8px }
+.controls select,.arrow { border:1px solid var(--rule); background:var(--page); border-radius:6px; min-height:36px; padding:4px 8px }
+.controls select { min-width:0; max-width:52vw; font-size:.8rem }
+.arrow { width:36px }
+.spread { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); margin:clamp(18px,4vh,48px) 0; min-height:min(740px,calc(100svh - 145px)); isolation:isolate }
+.stage { position:relative; display:flex; flex-direction:column; justify-content:space-between; min-height:510px; isolation:isolate; overflow:hidden; background:var(--stage); color:var(--light); border-radius:4px }
+.stage::before { content:""; position:absolute; inset:-20%; z-index:-2; background:radial-gradient(ellipse at 38% 42%,color-mix(in srgb,var(--light) 18%,transparent),transparent 50%),linear-gradient(128deg,transparent 34%,color-mix(in srgb,var(--light) 10%,transparent),transparent 70%); background-size:150% 130%; animation:wash 12s ease-in-out infinite alternate }
+@keyframes wash { to { background-position:100% 90% } }
+.stage[data-paused]::before { animation-play-state:paused }
+.stage canvas { position:absolute; inset:0; width:100%; height:100%; touch-action:pan-y; cursor:grab; z-index:-1 }
+.stage canvas:active { cursor:grabbing }
+.art-top,.art-bottom { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:clamp(18px,2.6vw,40px); pointer-events:none }
+.wordmark { font-weight:800; letter-spacing:-.055em; font-size:clamp(1.2rem,2.4vw,2rem); line-height:1 }
+.counter,.caption,.eyebrow,.footer,.stage button { font:600 .72rem/1.45 var(--mono); letter-spacing:.055em }
+.art-bottom { align-items:end }
+.caption { max-width:55%; text-wrap:balance }
+.art-controls { display:flex; gap:4px; pointer-events:auto }
+.art-controls button { border:1px solid currentColor; border-radius:100px; min-height:34px; padding:4px 9px; background:var(--stage); color:var(--light) }
+.panel { display:grid; align-content:center; justify-items:center; padding:38px clamp(15px,4vw,70px) }
+.sheet { width:min(100%,390px) }
+.eyebrow { text-transform:uppercase; margin:0 0 18px }
+h1 { font:650 clamp(2.8rem,5.2vw,5.4rem)/.95 var(--display); letter-spacing:-.068em; margin:0 0 16px; text-wrap:balance; overflow-wrap:break-word }
+.intro { margin:0 0 26px; opacity:.78; font-size:.96rem }
+form { display:grid; gap:15px }
+label { font-weight:650; font-size:.82rem; display:block; margin-bottom:6px }
+input { background:transparent; border:1px solid var(--rule); min-height:46px; padding:10px 13px; border-radius:5px; width:100% }
+input::placeholder { color:var(--ink); opacity:.6 }
+.password { position:relative }
+.password input { padding-right:65px }
+.reveal { position:absolute; right:4px; top:4px; bottom:4px; padding:0 9px; font-weight:650; font-size:.76rem }
+.submit { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--ink); color:var(--page); border-radius:5px; min-height:46px; font-weight:750; transition:transform .18s }
+.submit:hover { transform:translateY(-2px) }
+.status { font-size:.82rem; min-height:2.8em; margin:14px 0 0 }
+.footer { border-top:1px solid var(--rule); display:flex; justify-content:space-between; gap:14px; padding:13px 0 22px; opacity:.8 }
+body[data-style="press"] { --display:Georgia,serif }
+[data-style="press"] .spread { gap:1.5vw }
+[data-style="press"] .panel { border-block:3px double var(--ink) }
+[data-style="press"] h1 { font-weight:400; font-style:italic }
+[data-style="press"] input { border-width:0 0 1px; border-radius:0 }
+[data-style="console"] { --display:var(--mono); font-family:var(--mono) }
+[data-style="console"] .panel { border:1px solid var(--rule); border-left:0; background:repeating-linear-gradient(0deg,transparent 0 4px,var(--paper) 5px) }
+[data-style="console"] input,[data-style="console"] .submit { background:var(--page); border:1px solid var(--ink); color:var(--ink); border-radius:0 }
+[data-style="console"] .submit { color:var(--page); background:var(--ink) }
+[data-style="ticket"] .spread { grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); padding:clamp(8px,2vw,26px); background:var(--paper); border:1px solid var(--rule); border-radius:24px }
+[data-style="ticket"] .stage { grid-column:2; grid-row:1; border-radius:0 16px 16px 0 }
+[data-style="ticket"] .panel { grid-column:1; grid-row:1; border-right:2px dashed var(--rule); padding-inline:clamp(14px,3vw,50px) }
+[data-style="ticket"] .eyebrow { display:inline-block; border:1px solid; padding:4px 8px; transform:rotate(-3deg) }
+[data-style="clay"] .stage { border-radius:clamp(30px,6vw,90px) 14px }
+[data-style="clay"] .sheet { padding:clamp(18px,2.5vw,38px); border:1px solid var(--rule); border-radius:30px; box-shadow:8px 8px 0 var(--paper) }
+[data-style="clay"] input,[data-style="clay"] .submit { border-radius:22px }
+[data-style="sleeve"] .spread { grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); border-block:1px solid var(--ink); padding-block:16px }
+[data-style="sleeve"] .panel { grid-row:1; grid-column:1 }
+[data-style="sleeve"] .stage { grid-row:1; grid-column:2; border-radius:50% 50% 5px 5px }
+[data-style="sleeve"] .art-top { justify-content:center; margin-top:7%; flex-wrap:wrap }
+[data-style="sleeve"] .counter { display:none }
+[data-style="sleeve"] h1 { text-transform:uppercase; font-weight:900 }
+[data-style="overlay"] .spread { display:grid; grid-template-columns:minmax(0,1fr); align-items:stretch }
+[data-style="overlay"] .stage,[data-style="overlay"] .panel { grid-area:1/1 }
+[data-style="overlay"] canvas { width:63% }
+[data-style="overlay"] .panel { justify-self:end; width:42%; pointer-events:none; padding:32px 4% 32px 0 }
+[data-style="overlay"] .sheet { pointer-events:auto; background:var(--page); padding:clamp(22px,3vw,42px); border-radius:18px; box-shadow:0 15px 55px #0003 }
+[data-style="overlay"] .art-bottom { width:62% }
+[data-style="folio"] { --display:Georgia,serif }
+[data-style="folio"] .spread { background:var(--paper); border-radius:4px; padding:clamp(10px,2vw,30px); gap:2vw }
+[data-style="folio"] .stage { border-radius:48% 48% 3px 3px }
+[data-style="folio"] .art-top { justify-content:center; padding-top:15%; align-items:baseline }
+[data-style="folio"] .panel { background:var(--page); border:1px solid var(--rule) }
+[data-style="folio"] h1 { font-weight:400 }
+[data-style="poster"] .spread { gap:20px }
+[data-style="poster"] .stage { border:2px solid var(--ink); box-shadow:5px 5px var(--ink) }
+[data-style="poster"] h1 { text-transform:uppercase; font-weight:950; line-height:.88 }
+[data-style="poster"] .submit,[data-style="poster"] input { border:2px solid var(--ink); border-radius:0; box-shadow:3px 3px 0 var(--ink) }
+@media(max-width:740px) {
+  main { max-width:620px }
+  .bar { min-height:56px }
+  .spread,body[data-style] .spread { grid-template-columns:minmax(0,1fr); gap:12px; min-height:0; margin:14px 0 }
+  .stage,body[data-style] .spread .stage { grid-area:auto; min-height:clamp(210px,65vw,345px) }
+  body[data-style] .spread .panel { grid-area:auto; width:100%; justify-self:stretch; padding:24px 16px 8px; border-right:0 }
+  body[data-style] .stage canvas,body[data-style] .art-bottom { width:100% }
+  body[data-style] .stage .art-top { margin:0; padding:16px 20px }
+  body[data-style] .stage { border-radius:12px }
+  .art-bottom { padding:14px 18px }
+  .footer { font-size:.64rem }
+}
+@media(max-width:400px) { .arrow { width:30px } }
+@media(prefers-reduced-motion:reduce) { *,*::before { animation:none!important; transition:none!important } }
+</style>
+</head>
+<body>
+<main>
+<header class="bar">
+  <a class="archive" href="index.html">↖ UI Ideas</a>
+  <nav class="controls" aria-label="Browse motion studies">
+    <button id="previous" class="arrow" aria-label="Previous design">←</button>
+    <select id="picker" aria-label="Choose a login design"></select>
+    <button id="next" class="arrow" aria-label="Next design">→</button>
+  </nav>
+</header>
+<div class="spread">
+  <section class="stage" aria-label="Interactive illustration">
+    <canvas aria-hidden="true"></canvas>
+    <div class="art-top"><strong class="wordmark" id="brand"></strong><span class="counter" id="counter"></span></div>
+    <div class="art-bottom"><span class="caption" id="caption"></span><div class="art-controls">
+      <button id="rotate" aria-label="Rotate artwork">Rotate ↻</button><button id="motion">Pause</button>
+    </div></div>
+  </section>
+  <section class="panel" aria-labelledby="heading"><div class="sheet">
+    <p class="eyebrow" id="section-name"></p><h1 id="heading"></h1><p class="intro" id="intro"></p>
+    <form id="login">
+      <div><label for="email">Email address</label><input id="email" type="email" autocomplete="off" placeholder="you@example.com" required></div>
+      <div><label for="password">Demo password</label><div class="password"><input id="password" type="password" autocomplete="off" minlength="8" placeholder="At least 8 characters" required>
+        <button class="reveal" id="reveal" type="button" aria-controls="password" aria-pressed="false">Show</button>
+      </div></div>
+      <button class="submit" type="submit"><span id="action"></span><span aria-hidden="true">→</span></button>
+    </form>
+    <p class="status" role="status" id="status"></p>
+  </div></section>
+</div>
+<footer class="footer"><span>UI Ideas / Motion studies</span><span>Demo only · use sample details</span></footer>
+</main>
+<script>
+'use strict';
+// id, brand, layout, paper, ink, stage, stage text, sculpture palette, illustration, form copy
+const designs = [
+  ['pleat','Pleat','press','#f1efe5','#272b24','#203932','#e9f2c8',['#c7fa77','#8ea554','#f0f1bf'],'Folded ribbon','Material library','Back in the fold.','Sign in to revisit your material samples.','Open library'],
+  ['offbeat','Offbeat FM','sleeve','#ffc2a6','#352433','#472756','#fff3b4',['#302545','#ff8469','#ffe790'],'Grooved vinyl','Listener account','On the record.','Your listening room is ready.','Enter listening room'],
+  ['strata','Strata Maps','folio','#efe5ce','#403627','#634031','#fff2c1',['#df9258','#f6c37b','#976346'],'Survey contours','Field atlas','Open your atlas.','Pick up where your last survey ended.','Open field atlas'],
+  ['phase','Phase Array','console','#111c22','#b3f9dd','#081d24','#85f4d2',['#5cf2bc','#41a7af','#a5ffe0'],'Signal harmonics','Signal desk','Tune in.','Sign in to monitor your signal channels.','Connect to desk'],
+  ['softserve','Soft Serve','clay','#fff0ee','#582c47','#ae526f','#fff8d4',['#ff9bac','#ffe6ba','#e895dd'],'Twisted soft-serve cone','Test kitchen','Sweet to see you.','Your recipe notebook is waiting.','Open notebook'],
+  ['redline','Redline Transit','ticket','#f8ebda','#4b251e','#aa352a','#fff6c5',['#ffe270','#ff9277','#faf1cc'],'Transit interchange','Passenger access','All aboard.','Sign in to view your saved journeys.','View journeys'],
+  ['eclipse','Umbra','overlay','#e8e9fa','#282044','#17152d','#e2dcff',['#b4bbff','#45346c','#f2bae7'],'Eclipse and satellites','Observer account','After dark.','Return to your night-sky observations.','Open observatory'],
+  ['stack','Stack House','poster','#f6dc53','#241f22','#f36543','#211820',['#ffda4c','#3b55bb','#fff4c7'],'Cantilever blocks','Architecture studio','Build again.','Sign in to the studio project archive.','Enter studio'],
+  ['loom','Loom Works','press','#e6e0d5','#372d31','#483444','#f9e5ca',['#d38c7e','#d1c49e','#9686b6'],'Interlaced warp and weft','Textile archive','Common threads.','Return to your collection of weaving patterns.','Open patterns'],
+  ['relay','Relay Audio','console','#182030','#caedff','#192d56','#d0f3ff',['#498ee3','#80e3ee','#aa90ff'],'Equalizer columns','Mixing console','Sound check.','Sign in to bring up your latest mix.','Open console'],
+  ['petal','Petal Club','clay','#fff1cf','#483d25','#e9a653','#332512',['#fff0aa','#ff997c','#d76878'],'Layered flower','Garden journal','In full bloom.','Return to your garden journal.','Open journal'],
+  ['meridian','Meridian Air','ticket','#e3eef2','#173347','#246586','#fff1c7',['#e6d196','#8be0df','#ffd8ce'],'Great-circle flights','Passenger lounge','Ready to fly?','Sign in to plan your next departure.','Open lounge'],
+  ['facet','Facet Editions','folio','#e9e4fa','#40324e','#493e68','#f9e8fe',['#b398ef','#8ce4da','#f4bafa'],'Faceted quartz cluster','Collector access','Crystal clear.','Your mineral collection is ready to view.','Open collection'],
+  ['breakwater','Breakwater','overlay','#e9f5ee','#15404b','#113747','#d1fce9',['#4ecebd','#77bae2','#b1f3dc'],'Rolling wave field','Surf log','Catch the tide.','Sign in to check your session log.','View surf log'],
+  ['aperture','Aperture Lab','sleeve','#f4e9db','#282624','#52483f','#fff2d9',['#e8bd86','#abc4ba','#677d86'],'Mechanical iris','Darkroom access','In focus.','Sign in to revisit your contact sheets.','Enter darkroom'],
+  ['switchback','Switchback','poster','#e4efd9','#283524','#819d57','#152411',['#e2ed75','#375942','#efd7a2'],'Mountain switchbacks','Trail club','Trail ahead.','Your route collection is ready.','Open trail book'],
+  ['coil','Coil Supply','console','#201b23','#f8ce9c','#34202c','#ffe0a6',['#f0a55b','#eeb97e','#b55b5d'],'Helical spring','Parts catalog','Power up.','Sign in to browse your component lists.','Open catalog'],
+  ['kiln','Kiln Journal','press','#f0dfcb','#45291e','#784635','#ffedcf',['#e69466','#fbca8a','#b3614b'],'Thrown ceramic vessel','Pottery studio','At the wheel.','Return to your firing notes and glaze tests.','Open studio log'],
+  ['mobile','Balance Studio','folio','#e7eff1','#2e364a','#4a6671','#fff3d1',['#f29272','#c3dbb1','#f0cc80'],'Balanced hanging mobile','Sculpture archive','Find balance.','Sign in to revisit your studio studies.','Open studies'],
+  ['rally','Rally Club','poster','#d9f16c','#1c332f','#254f48','#f2ffc8',['#e2ed63','#e7f6ba','#94bc80'],'Seamed tennis ball','Members court','Your serve.','Sign in to your clubhouse schedule.','Enter clubhouse'],
+  ['lantern','Lantern House','clay','#fae5cc','#532d28','#823f47','#ffe9b8',['#f3ac67','#ffdb99','#bb6b58'],'Ribbed paper lantern','Workshop access','Light the room.','Return to your lantern workshop.','Enter workshop'],
+  ['velocity','Velodrome','ticket','#e9e3fc','#302747','#5e4b89','#fff0ce',['#dac6ff','#f0a577','#a2c8fa'],'Banked cycling track','Rider entry','Back on track.','Sign in to review your training laps.','Open lap book'],
+  ['echo','Echo Chamber','sleeve','#f0bed3','#3b2340','#5c305a','#ffe0ec',['#f4a4ce','#af9df2','#ffc7ab'],'Acoustic diaphragm','Rehearsal room','Make waves.','Sign in to your saved rehearsal sessions.','Enter sound room'],
+  ['solstice','Solstice Index','overlay','#f6ead2','#453718','#403417','#fff2b8',['#f5cd58','#f1a568','#ffe3a4'],'Radial sundial','Solar almanac','First light.','Sign in to open your observations.','Open almanac']
+].map(([id,brand,layout,page,ink,stage,light,palette,caption,section,heading,intro,action]) =>
+  ({id,brand,layout,page,ink,stage,light,palette,caption,section,heading,intro,action}));
+
+// Build the sculpture once per design. Neighbouring faces share their vertices.
+const TAU = Math.PI * 2;
+const {cos,sin,abs,max,min,pow} = Math;
+function makeSculpture(id) {
+  const vertices = [], faces = [];
+  function surface(rows, cols, point, pigment=0) {
+    const start = vertices.length;
+    for (let i=0; i<=rows; i++) {
+      for (let j=0; j<=cols; j++) vertices.push(point(i/rows,j/cols));
+    }
+    for (let i=0; i<rows; i++) {
+      for (let j=0; j<cols; j++) {
+        const a=start+i*(cols+1)+j;
+        const color=typeof pigment==='function' ? pigment(i,j) : pigment;
+        faces.push({v:[a,a+1,a+cols+2,a+cols+1], color});
+      }
+    }
+  }
+  function ball(x,y,z,rx,ry,rz,color) {
+    surface(16,32,(u,v)=>{
+      const p=Math.PI*(u-.5), a=TAU*v;
+      return [x+rx*cos(p)*cos(a),y+ry*sin(p),z+rz*cos(p)*sin(a)];
+    },color);
+  }
+  function lathe(profile,color,segments=64) {
+    for(let i=1;i<profile.length;i++){
+      const [r0,y0]=profile[i-1], [r1,y1]=profile[i];
+      const rows=max(1,Math.ceil(abs(r1-r0)/.12));
+      surface(rows,segments,(u,v)=>{
+        const r=r0+(r1-r0)*u;
+        return [r*cos(v*TAU),y0+(y1-y0)*u,r*sin(v*TAU)];
+      },typeof color==='function' ? (_,j)=>color(i-1,j) : color);
+    }
+  }
+  function tube(samples,radius,path,color,sides=8) {
+    surface(samples,sides,(u,v)=>{
+      const p=path(u), a=path(max(0,u-.001)), b=path(min(1,u+.001));
+      const d=b.map((n,i)=>n-a[i]), length=Math.hypot(...d)||1;
+      const [x,y,z]=d.map(n=>n/length);
+      const base=abs(y)>.95 ? [0,z,-y] : [-z,0,x];
+      const s=Math.hypot(...base)||1, [h,k,l]=base.map(n=>n/s);
+      const c=radius*cos(v*TAU), t=radius*sin(v*TAU);
+      return [p[0]+h*c+(y*l-z*k)*t,p[1]+k*c+(z*h-x*l)*t,p[2]+l*c+(x*k-y*h)*t];
+    },color);
+  }
+  function rod(a,b,r,color) {
+    tube(1,r,u=>a.map((x,i)=>x+(b[i]-x)*u),color);
+  }
+  function box(x,y,z,w,h,d,turn,color) {
+    const start=vertices.length;
+    for (const [xx,yy,zz] of [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]]) {
+      vertices.push([x+xx*w*cos(turn)-zz*d*sin(turn),y+yy*h,z+xx*w*sin(turn)+zz*d*cos(turn)]);
+    }
+    for (const side of [[0,1,2,3],[4,5,6,7],[0,4,7,3],[1,5,6,2],[3,2,6,7],[0,1,5,4]]) {
+      faces.push({v:side.map(i=>i+start),color});
+    }
+  }
+  switch(id) {
+    case 'pleat':
+      surface(128,8,(u,v)=>{
+        const a=u*TAU,b=(v-.5)*1.15,r=1.15+b*cos(a*1.5)+.09*cos(a*32);
+        return [r*cos(a),r*sin(a)*.87,b*sin(a*1.5)+.32*sin(2*a)];
+      },i=>i%4===0?2:0);
+      break;
+    case 'offbeat':
+      lathe([[0,-.08],[1.65,-.08],[1.69,0],[1.65,.08],[0,.08]],0);
+      for(let i=0;i<11;i++) {
+        const r=.69+i*.085;
+        tube(64,.009,u=>[r*cos(TAU*u),.084,r*sin(TAU*u)],i%4===0?1:0,4);
+      }
+      lathe([[.07,.1],[.56,.1],[.56,.12],[.07,.12]],1);
+      lathe([[.06,.14],[.22,.14]],2);
+      break;
+    case 'strata':
+      for(let i=0;i<9;i++) {
+        const scale=1.65-i*.137;
+        surface(2,64,(u,v)=>{
+          const a=v*TAU,r=scale*(1+.12*cos(3*a+i*.11)+.08*sin(5*a))*(u===1?.01:1);
+          return [r*cos(a)+i*.035,-.68+i*.16+min(u,.5)*.2,r*sin(a)*.82];
+        },row=>row===0?2:i%2);
+      }
+      break;
+    case 'phase':
+      for(let j=0;j<17;j++) tube(60,.02,u=>[(u-.5)*3.6,.85*sin(u*TAU*1.5+j*.15)*sin(Math.PI*u),(j-8)*.13],j%3);
+      break;
+    case 'softserve':
+      lathe([[.04,-1.68],[.66,-.2],[.68,-.13],[0,-.13]],1);
+      surface(126,10,(u,v)=>{
+        const a=u*TAU*3.4,r=(1-u)*.56,t=.28*(1-.86*u);
+        return [(r+t*cos(TAU*v))*cos(a),-.12+u*1.47+t*sin(TAU*v),(r+t*cos(TAU*v))*sin(a)];
+      },i=>i>92?2:0);
+      break;
+    case 'redline':
+      for(let j=0;j<3;j++) {
+        const path=u=>[(u-.5)*3.35,.62*sin(u*TAU+j*1.4)+(j-1)*.25,(j-1)*.4+.32*cos(u*TAU)];
+        tube(72,.065,path,j);
+        for(const u of [.13,.44,.78]) ball(...path(u),.12,.12,.12,2);
+      }
+      break;
+    case 'eclipse':
+      ball(0,0,0,.93,.93,.93,1);
+      for(let j=0;j<2;j++){
+        const path=u=>[1.72*cos(u*TAU),(.35+j*.45)*sin(u*TAU)+(j-.5)*.62*cos(u*TAU),1.34*sin(u*TAU)];
+        tube(80,.025,path,j===0?0:2);
+        ball(...path(j*.43+.08),.16,.16,.16,j===0?2:0);
+      }
+      break;
+    case 'stack':
+      for(let i=0;i<9;i++) box(.29*sin(i*.8),-1.04+i*.26,.2*cos(i),1.1,.115,.46,i*.38,i%3);
+      break;
+    case 'loom':
+      for(let i=0;i<13;i++){
+        const p=(i-6)*.18;
+        tube(56,.062,u=>[p,.09*cos(u*Math.PI*12+i*Math.PI)+.2*sin(p*2),(u-.5)*2.16],i%2,6);
+        tube(56,.062,u=>[(u-.5)*2.16,-.09*cos(u*Math.PI*12+i*Math.PI)+.2*sin((u-.5)*4.32),p],2,6);
+      }
+      break;
+    case 'relay':
+      for(let i=0;i<11;i++) for(let j=0;j<5;j++){
+        const h=.2+1.2*abs(sin(i*.5+j*.59))*sin((i+.8)*Math.PI/12);
+        box((i-5)*.25,-.65+h*.5,(j-2)*.26,.095,h*.5,.095,0,(i+j)%3);
+      }
+      break;
+    case 'petal':
+      for(let j=0;j<2;j++) for(let i=0;i<9;i++){
+        const a=TAU*(i+j*.48)/9;
+        surface(16,10,(u,v)=>{
+          const r=(.11+u*(1.3-j*.36)),w=(v-.5)*sin(Math.PI*u)*.87;
+          return [r*cos(a)-w*sin(a),-.25+.45*u*u+.13*cos(v*TAU)+j*.25,r*sin(a)+w*cos(a)];
+        },j);
+      }
+      ball(0,.19,0,.32,.24,.32,2);
+      break;
+    case 'meridian':
+      ball(0,0,0,1,1,1,1);
+      for(let j=0;j<7;j++){
+        const a=j*Math.PI/7;
+        tube(64,.013,u=>[1.01*cos(TAU*u)*cos(a),1.01*sin(TAU*u),1.01*cos(TAU*u)*sin(a)],0);
+      }
+      for(const y of [-.6,-.3,0,.3,.6]) {
+        const r=Math.sqrt(1-y*y)*1.01;
+        tube(64,.013,u=>[r*cos(TAU*u),y,r*sin(TAU*u)],0);
+      }
+      tube(80,.036,u=>[1.34*cos(TAU*u),.77*sin(TAU*u),1.06*sin(TAU*u)],2);
+      ball(1.34,0,0,.1,.1,.1,2);
+      break;
+    case 'facet':
+      for(let i=0;i<7;i++){
+        const a=i*2.4, d=i===0?0:.62,h=i===0?1.65:.6+.57*abs(sin(i));
+        surface(3,6,(u,v)=>{
+          const r=[.19,.38,.36,.015][Math.round(u*3)],y=[-.88,-.65,h*.55,h][Math.round(u*3)];
+          return [(d+.18*y)*cos(a)+r*cos(TAU*v+a),y,(d+.18*y)*sin(a)+r*sin(TAU*v+a)];
+        },(row,col)=>(i+col+(row===2?1:0))%3);
+      }
+      break;
+    case 'breakwater':
+      for(let i=0;i<19;i++) surface(48,1,(u,v)=>{
+        const z=(i-9)*.13;
+        return [(u-.5)*3.15,.43*sin(u*TAU*1.35+z)+.19*sin(z*3+u*4)-v*.22,z+.045*v];
+      },i=>i%9===0?2:0);
+      break;
+    case 'aperture':
+      for(let i=0;i<9;i++){
+        const a=i*TAU/9;
+        surface(14,4,(u,v)=>{
+          const r=.43+v*.95,angle=a+u*.9+v*.63;
+          return [r*cos(angle),r*sin(angle),u*.15+v*.1];
+        },i%3);
+      }
+      tube(80,.08,u=>[1.43*cos(TAU*u),1.43*sin(TAU*u),0],2);
+      break;
+    case 'switchback': {
+      const mountain=(x,z)=>1.42-.9*abs(x)-.85*abs(z)+.08*sin(7*x+2*z);
+      surface(18,19,(u,v)=>{const x=(u-.5)*3,z=(v-.5)*2.6;return [x,mountain(x,z),z]},(i,j)=>(i+j)%6===0?2:1);
+      tube(110,.045,u=>{const z=u*2.5-1.25,x=.65*sin(u*TAU*2.1);return [x,mountain(x,z)+.075,z]},0);
+      break;
+    }
+    case 'coil':
+      tube(190,.14,u=>[.83*cos(u*TAU*4),-1.42+u*2.84,.83*sin(u*TAU*4)],0,12);
+      break;
+    case 'kiln': {
+      const profile=[[.03,-1.15],[.48,-1.15],[.61,-1.06],[.87,-.74],[1,-.32],[.92,.14],[.63,.63],[.57,.92],[.66,.99],[.68,1.07],[.52,1.07],[.48,.89],[.05,.52]];
+      lathe(profile,(row)=>row===9?1:0);
+      for(let i=0;i<5;i++){
+        const r=.94+i*.012;
+        tube(64,.016,u=>[r*cos(TAU*u),-.51+i*.045,r*sin(TAU*u)],2);
+      }
+      break;
+    }
+    case 'mobile':
+      rod([0,1.43,0],[0,.87,0],.018,2);
+      rod([-1.03,.79,0],[.88,.96,0],.03,2);
+      rod([-1.03,.79,0],[-1.03,.14,0],.016,2);
+      ball(-1.03,-.16,0,.45,.41,.08,0);
+      rod([.88,.96,0],[.88,.24,0],.016,2);
+      rod([.25,.15,0],[1.35,.31,0],.025,2);
+      rod([.25,.15,0],[.25,-.63,0],.016,2);
+      ball(.25,-.82,0,.41,.24,.09,1);
+      ball(1.35,.06,0,.24,.24,.24,2);
+      break;
+    case 'rally':
+      ball(0,0,0,1,1,1,0);
+      for(let j=0;j<2;j++) tube(100,.035,u=>{
+        const a=u*TAU,p=(.5+.44*cos(a*2))*(j===0?1:-1);
+        return [cos(a)*cos(p),sin(p),sin(a)*cos(p)];
+      },1);
+      break;
+    case 'lantern':
+      surface(40,56,(u,v)=>{
+        const r=.42+.58*pow(sin(Math.PI*u),.72)+.04*cos(u*TAU*12);
+        return [r*cos(TAU*v),(u-.5)*2,r*sin(TAU*v)];
+      },i=>i%3===0?1:0);
+      lathe([[0,1],[.46,1],[.46,1.08],[0,1.08]],2);
+      tube(40,.035,u=>[.28*cos(Math.PI*u),1.08+.32*sin(Math.PI*u),0],2);
+      break;
+    case 'velocity':
+      surface(80,12,(u,v)=>{
+        const a=u*TAU,r=.65+.42*v;
+        return [(1.16+r*.59)*cos(a),-.33+v*(.25+.54*pow(abs(cos(a)),3)),r*sin(a)];
+      },(_,j)=>j%4===0?1:j<6?0:2);
+      break;
+    case 'echo':
+      surface(50,64,(u,v)=>{
+        const r=.035+u*1.44, a=v*TAU, z=.3*cos(u*TAU*3.4)*(1-u*.5);
+        return [r*cos(a),r*sin(a),z];
+      },i=>i%14<2?2:i<24?0:1);
+      break;
+    case 'solstice':
+      lathe([[0,-.3],[1.43,-.3],[1.43,-.2],[0,-.2]],0);
+      for(let i=0;i<36;i++){
+        const a=i*TAU/36,r=i%3===0?1.01:1.19;
+        rod([r*cos(a),-.17,r*sin(a)],[1.37*cos(a),-.17,1.37*sin(a)],.021,i%3===0?2:1);
+      }
+      surface(1,1,(u,v)=>[(u-.5)*1.4,-.17+v*(1-u)*1.36,.08*v],1);
+      break;
+  }
+  return {vertices,faces};
+}
+
+const $ = id => document.getElementById(id);
+const canvas = document.querySelector('canvas');
+const ctx = canvas.getContext('2d');
+const stage = document.querySelector('.stage');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+const embedded = window.self !== window.top;
+let paused = reduce.matches || embedded, visible = true, current = 0;
+let mesh, paint, projected, size, centre, azimuth, elevation, elapsed = 0;
+let tiltX=0, tiltY=0, drag, frame=0, previousTime=0;
+const views = {
+  offbeat:[.3,.8], loom:[-.3,.87], petal:[.24,.84], aperture:[-.32,.17],
+  rally:[.23,.13], echo:[-.37,.18], velocity:[.38,.68], solstice:[-.7,.63],
+  mobile:[-.3,.15], switchback:[-.6,.4], strata:[.45,.54]
+};
+function prepare(design) {
+  mesh = makeSculpture(design.id);
+  projected = mesh.vertices.map(()=>({}));
+  const bounds = [0,1,2].map(axis=>{
+    const values = mesh.vertices.map(p=>p[axis]);
+    return [min(...values),max(...values)];
+  });
+  centre = bounds.map(([lo,hi])=>(lo+hi)/2);
+  size = max(...mesh.vertices.map(p=>Math.hypot(...p.map((n,i)=>n-centre[i]))));
+  paint = design.palette.map(hex=>{
+    const rgb=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+    return Array.from({length:64},(_,i)=>{
+      const light=.45+i*.011;
+      return 'rgb('+rgb.map(n=>min(255,Math.round(n*light+max(0,light-1)*40))).join(',')+')';
+    });
+  });
+  for(const face of mesh.faces) face.points=face.v.map(i=>projected[i]);
+  [azimuth,elevation]=views[design.id] || [.34,.33];
+  elapsed=tiltX=tiltY=0;
+}
+// Deform selected materials in object space before projecting the camera view.
+const movement = {
+  phase: (p,t)=>[p[0],p[1]+.18*sin(t*2.4+p[0]*2.8+p[2])*cos(p[0]*.85),p[2]],
+  relay: (p,t)=>[p[0],-.65+(p[1]+.65)*(.84+.18*cos(t*2.6+p[0]*3+p[2])),p[2]],
+  breakwater: (p,t)=>[p[0],p[1]+.21*sin(t*1.9+p[0]*2+p[2]*1.3),p[2]],
+  coil: (p,t)=>[p[0],p[1]*(1+.14*sin(t*1.85)),p[2]],
+  lantern: (p,t)=>[p[0]+.12*(1.4-p[1])*sin(t*1.1),p[1],p[2]],
+  echo: (p,t)=>[p[0],p[1],p[2]+.11*cos(t*3-Math.hypot(p[0],p[1])*5)],
+  petal: (p,t)=>[p[0],p[1]+.16*Math.hypot(p[0],p[2])*sin(t*1.2),p[2]],
+  mobile: (p,t)=>[p[0],p[1],p[2]+.23*p[0]*sin(t*1.2)]
+};
+function draw() {
+  if (!ctx || !mesh || !canvas.clientWidth || !canvas.clientHeight) return;
+  const w=canvas.clientWidth,h=canvas.clientHeight,dpr=min(devicePixelRatio||1,1.6);
+  if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){
+    canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr);
+  }
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  const scale=min(w*.42,h*.355)/size;
+  const id=designs[current].id, deform=movement[id];
+  const spin=id==='offbeat'||id==='kiln'||id==='solstice';
+  const yaw=azimuth+tiltX+(spin?elapsed*.24:sin(elapsed*.42)*.28);
+  const pitch=elevation+tiltY+sin(elapsed*.32)*.065;
+  const cx=cos(yaw),sx=sin(yaw),cy=cos(pitch),sy=sin(pitch);
+  const bounce=id==='rally'?-.08*h*abs(sin(elapsed*1.4)):0;
+  const middle=h*.50+sin(elapsed*.7)*min(h*.009,5)+bounce;
+  const shadow=ctx.createRadialGradient(0,0,0,0,0,1);
+  shadow.addColorStop(0,'#0004');shadow.addColorStop(1,'#0000');
+  ctx.save();ctx.translate(w/2,h*.81);ctx.scale(min(w*.34,h*.27),max(4,h*.032));
+  ctx.fillStyle=shadow;ctx.fillRect(-1,-1,2,2);ctx.restore();
+  mesh.vertices.forEach((p,i)=>{
+    const point=deform?deform(p,elapsed):p;
+    const x=point[0]-centre[0],y=point[1]-centre[1],z=point[2]-centre[2];
+    const d=z*cx-x*sx, v=projected[i];
+    v.x=x*cx+z*sx; v.y=y*cy-d*sy; v.z=y*sy+d*cy;
+    const perspective=scale/(1-v.z/(size*5.8));
+    v.px=w/2+v.x*perspective; v.py=middle-v.y*perspective;
+  });
+  for(const face of mesh.faces){
+    const [a,b,c,d]=face.v;
+    face.depth=projected[a].z+projected[b].z+projected[c].z+projected[d].z;
+  }
+  mesh.faces.sort((a,b)=>a.depth-b.depth);
+  ctx.lineWidth=.6;
+  for(const face of mesh.faces){
+    const [a,b,c,d]=face.points;
+    const ax=c.x-a.x,ay=c.y-a.y,az=c.z-a.z,bx=d.x-b.x,by=d.y-b.y,bz=d.z-b.z;
+    const nx=ay*bz-az*by,ny=az*bx-ax*bz,nz=ax*by-ay*bx;
+    const len=Math.hypot(nx,ny,nz)||1;
+    const diffuse=(-nx*.45+ny*.66+nz*.59)*(nz<0?-1:1)/len;
+    const shade=min(63,max(0,Math.round(31+31*diffuse)));
+    ctx.fillStyle=ctx.strokeStyle=paint[face.color][shade];
+    ctx.beginPath();ctx.moveTo(a.px,a.py);ctx.lineTo(b.px,b.py);ctx.lineTo(c.px,c.py);ctx.lineTo(d.px,d.py);
+    ctx.closePath();ctx.fill();ctx.stroke();
+  }
+}
+function tick(time) {
+  frame=0;
+  if(!visible || document.hidden) {previousTime=0;return;}
+  if(!previousTime || time-previousTime>=33){
+    if(previousTime && !paused) elapsed+=min(.08,(time-previousTime)/1000);
+    previousTime=time;draw();
+  }
+  if(!paused) frame=requestAnimationFrame(tick);
+}
+function refresh(){
+  cancelAnimationFrame(frame); previousTime=0;
+  frame=requestAnimationFrame(tick);
+}
+function setMotion(stop) {
+  paused=stop;stage.toggleAttribute('data-paused',stop);
+  $('motion').textContent=stop?'Play':'Pause';
+  $('motion').setAttribute('aria-label',stop?'Play artwork motion':'Pause artwork motion');
+  refresh();
+}
+canvas.addEventListener('pointerdown',event=>{
+  drag={id:event.pointerId,x:event.clientX,y:event.clientY,yaw:azimuth,pitch:elevation};
+  canvas.setPointerCapture(event.pointerId);
+});
+canvas.addEventListener('pointermove',event=>{
+  if(drag && drag.id===event.pointerId){
+    azimuth=drag.yaw+(event.clientX-drag.x)*.012;
+    elevation=max(-1.15,min(1.15,drag.pitch+(event.clientY-drag.y)*.008));
+  } else if(event.pointerType==='mouse' && !paused){
+    const bounds=canvas.getBoundingClientRect();
+    tiltX=((event.clientX-bounds.left)/bounds.width-.5)*.35;
+    tiltY=((event.clientY-bounds.top)/bounds.height-.5)*.18;
+  }
+  if(paused) refresh();
+});
+canvas.addEventListener('lostpointercapture',()=>{drag=null});
+canvas.addEventListener('pointerleave',()=>{tiltX=tiltY=0});
+$('rotate').onclick=()=>{azimuth+=Math.PI/6;refresh()};
+$('motion').onclick=()=>setMotion(!paused);
+reduce.addEventListener('change',()=>setMotion(reduce.matches||embedded));
+document.addEventListener('visibilitychange',refresh);
+new ResizeObserver(refresh).observe(canvas);
+new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;refresh()}).observe(canvas);
+
+function setReveal(show){
+  $('password').type=show?'text':'password';
+  $('reveal').textContent=show?'Hide':'Show';
+  $('reveal').setAttribute('aria-pressed',String(show));
+}
+$('reveal').onclick=()=>setReveal($('password').type==='password');
+$('login').addEventListener('submit',event=>{
+  event.preventDefault();
+  $('status').textContent='Demo complete. Your details stayed in this browser.';
+  $('login').reset();setReveal(false);
+});
+$('login').addEventListener('input',()=>{$('status').textContent=''});
+const picker=$('picker');
+designs.forEach((d,i)=>picker.add(new Option(String(i+10)+' · '+d.brand,d.id)));
+function showDesign() {
+  const match=designs.findIndex(d=>d.id===location.hash.slice(1));
+  current=max(0,match);
+  const d=designs[current];
+  document.body.dataset.style=d.layout;
+  for(const property of ['page','ink','stage','light']) document.documentElement.style.setProperty('--'+property,d[property]);
+  document.documentElement.style.colorScheme=d.layout==='console'?'dark':'light';
+  for(const id of ['brand','caption','heading','intro','action']) $(id).textContent=d[id];
+  $('section-name').textContent=d.section;
+  $('counter').textContent=String(current+10)+' / 33';
+  $('status').textContent='';
+  $('login').reset();setReveal(false);
+  picker.value=d.id;document.title=d.brand+' · Login motion studies';
+  prepare(d); setMotion(paused);
+}
+function navigate(step){location.hash=designs[(current+step+designs.length)%designs.length].id}
+$('next').onclick=()=>navigate(1);
+$('previous').onclick=()=>navigate(-1);
+picker.onchange=()=>{location.hash=picker.value};
+window.addEventListener('hashchange',showDesign);
+showDesign();
+</script>
+</body>
+</html>
